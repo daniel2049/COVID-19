@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+td {
+  border: 1px solid black;
+}
+</style>
+</head>
+<body>
+ 
+<td align="center"><object id="svg-object" type="image/svg+xml" data="USA_Counties_with_FIPS_and_names.svg" ></object></td>
+
+    <script type="text/javascript" src="cases.js"></script>
+    <script type="text/javascript">
+      function OBJECT(D){
+        try {S=D.getSVGDocument()}
+        catch(e){S=D.contentDocument}
+        return S
+      }
+      function test1(id) {
+        var D=document.getElementById(id)
+	S=eval(D.nodeName)(D,id) //sends OBJECT to function OBJECT, EMBED to EMBED etc.
+	if (!S) return
+  	Root=S.documentElement;
+
+        var slider = document.getElementById("myRange");
+        var day = parseInt(slider.value);
+
+        var slide_value = document.getElementById("myValue");
+        slide_value.innerHTML = day_slide[day]
+
+        var state = document.getElementById("choose-state").value
+        for (var k in county_rank[state]) {
+           for (var i = 0; i < 10; i++) {
+              if (county_rank[state][k][day] == i) {
+                 document.getElementById("top_name["+i.toString()+"]").innerHTML  = k
+                 document.getElementById("top_value["+i.toString()+"]").innerHTML = county_cases[state][k][day]
+              }
+           }
+        }
+
+        for (var k in percent) {
+           try { 
+              e = S.getElementById(k)
+              var p = percent[k][day]
+              var color;
+              if (p >= 90) {
+                 color = 'hsl(0, 100%,' + (0+20-20*p/100).toString()+'%)';
+              } else if (p >= 60) {
+                 color = 'hsl(0, 100%,' + (20+20-20*p/100).toString()+'%)';
+              } else if (p >= 30) {
+                 color = 'hsl(0, 100%,' + (40+20-20*p/100).toString()+'%)';
+              } else if (p >= 15) {
+                 color = 'hsl(0, 100%,' + (60+20-20*p/100).toString()+'%)';
+              } else if (p >= 5) {
+                 color = 'hsl(0, 100%,' + (80+10-10*p/100).toString()+'%)';
+              } else if (p > 0) {
+                 color = 'hsl(0, 100%,' + (94+5-5*p/100).toString()+'%)';
+              } else {
+                 color = "#d0d0d0";
+              }
+              e.setAttributeNS(null, 'fill', color);
+           }
+           catch(e){ continue; }
+        }
+      }
+    </script>
+
+<div class="slidecontainer">
+  <input type="range" min="0" max="100" value="0" class="slider" id="myRange" oninput="test1('svg-object')" >
+  <p>Date: <span id="myValue"></span></p>
+</div>
+
+<div>
+<select id="choose-state" oninput=test1('svg-object')>
+</select>
+</div>
+<script>
+   function add_element(state) {
+      var option = document.createElement('option');
+      option.text = state
+      option.value = state
+      document.querySelector('#choose-state').add(option, null);
+   }
+   for (var i = 0; i < num_state; i++) {
+      add_element(state_name[i])
+   }
+</script>
+
+
+<div>
+<font size="2" >
+<table>
+  <tr>
+  <script>
+  for (var i = 0; i < 5; i++) {
+     document.writeln('<col width="80px" />')
+     document.writeln('<col width="55px" />')
+  }
+  for (var i = 0; i < 5; i++) {
+     document.writeln('<td align="center"><span id="top_name[' + i.toString() + ']">-</span></td>')
+     document.writeln('<td align="center"><span id="top_value[' + i.toString() + ']">-</span></td>')
+  }
+  </script>
+  </tr>
+  <tr>
+  <script>
+  for (var i = 5; i < 10; i++) {
+     document.writeln('<td align="center"><span id="top_name[' + i.toString() + ']">-</span></td>')
+     document.writeln('<td align="center"><span id="top_value[' + i.toString() + ']">-</span></td>')
+  }
+  </script>
+  </tr>
+</table>
+</div>
+
+<script>
+var slider = document.getElementById("myRange");
+slider.max = (num_case-1).toString();
+slider.value = (num_case/2).toString();
+</script>
+
+
+</body>
+</html>
+
