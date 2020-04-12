@@ -2,24 +2,71 @@
 <html>
 <head>
 <style>
-td {
+table#t01 td {
+  table-layout: fixed;
   border: 1px solid black;
+}
+div#d01 {
+    display: flex;
+    flex-flow: row-reverse;
+    align-items: center;
+    justify-content: flex-end;
+    height: 30px;
+}
+.lblFloat
+{
+    float:right;
+    text-align: center;
+    padding-left: 1em;
+}
+H2#H01 {
+    margin: 0px;
+}
+p#p01 {
+    margin: 0px;
 }
 </style>
 </head>
 <body>
 
-<font size = 2><p><a href="https://github.com/CSSEGISandData/COVID-19">Data Source</a></p></font>
-<td align="center"><object id="svg-object" type="image/svg+xml" data="USA_Counties_with_FIPS_and_names.svg" ></object></td>
+<H2 id="H01" align="center">COVID-19 Cases in U.S.</H2>
+<td><object id="svg-object" type="image/svg+xml" data="USA_Counties_with_FIPS_and_names.svg" ></object></td>
+<font size=2><p id="p01" align="center">Data Source: <a href="https://github.com/CSSEGISandData/COVID-19">CSSEGISandData/COVID-19</a></p></font>
 
     <script type="text/javascript" src="cases.js"></script>
     <script type="text/javascript">
+      var first_flag = 1;
+      var svg_title = [];
       function OBJECT(D){
         try {S=D.getSVGDocument()}
         catch(e){S=D.contentDocument}
         return S
       }
-      function test1(id) {
+      function fill_color(d) {
+        for (var k in percent) {
+           try { 
+              e = S.getElementById(k)
+              var p = percent[k][d]
+              var color;
+              if (p > 0) {
+                 color = 'hsl(0, 100%,' + p.toString()+'%)';
+              } else {
+                 color = "#d0d0d0";
+              }
+              e.setAttributeNS(null, 'fill', color);
+              if (first_flag == 1) {
+                 svg_title[k] = e.children[0].innerHTML;
+              }
+              var title_case = svg_title[k] + '\n' + fips_cases[k][d].toString()
+              //var title_id = e.children[0].id
+              //e.innerHTML = "\n   <title xmlns=\"http://www.w3.org/2000/svg\" id=\"" + title_id + "\">" + title_case + "</title>\n  "
+              e.innerHTML = "\n   <title xmlns=\"http://www.w3.org/2000/svg\">" + title_case + "</title>\n  "
+           }
+           catch(e){ continue; }
+        }
+        first_flag = 0;
+      }
+      function update_map(id) {
         var D=document.getElementById(id)
 	S=eval(D.nodeName)(D,id) //sends OBJECT to function OBJECT, EMBED to EMBED etc.
 	if (!S) return
@@ -40,41 +87,17 @@ td {
               }
            }
         }
-
-        for (var k in percent) {
-           try { 
-              e = S.getElementById(k)
-              var p = percent[k][day]
-              var color;
-              if (p >= 90) {
-                 color = 'hsl(0, 100%,' + (0+20-20*p/100).toString()+'%)';
-              } else if (p >= 60) {
-                 color = 'hsl(0, 100%,' + (20+20-20*p/100).toString()+'%)';
-              } else if (p >= 30) {
-                 color = 'hsl(0, 100%,' + (40+20-20*p/100).toString()+'%)';
-              } else if (p >= 15) {
-                 color = 'hsl(0, 100%,' + (60+20-20*p/100).toString()+'%)';
-              } else if (p >= 5) {
-                 color = 'hsl(0, 100%,' + (80+10-10*p/100).toString()+'%)';
-              } else if (p > 0) {
-                 color = 'hsl(0, 100%,' + (90+5-5*p/100).toString()+'%)';
-              } else {
-                 color = "#d0d0d0";
-              }
-              e.setAttributeNS(null, 'fill', color);
-           }
-           catch(e){ continue; }
-        }
+        fill_color(day);
       }
     </script>
 
-<div class="slidecontainer">
-  <input type="range" min="0" max="100" value="0" class="slider" id="myRange" oninput="test1('svg-object')" >
-  <p>Date: <span id="myValue"></span></p>
+<div id="d01">
+    <output class="lblFloat"><label>Date: <span id="myValue"></span></label></output>
+    <input type="range" id="myRange" min="1" max="100" oninput="update_map('svg-object')" />
 </div>
 
 <div>
-<select id="choose-state" oninput=test1('svg-object')>
+<select id="choose-state" oninput=update_map('svg-object')>
 </select>
 </div>
 <script>
@@ -91,13 +114,13 @@ td {
 
 
 <div>
-<font size="2" >
-<table>
+<font size="3" >
+<table id="t01">
   <tr>
   <script>
   for (var i = 0; i < 5; i++) {
-     document.writeln('<col width="80px" />')
-     document.writeln('<col width="55px" />')
+     document.writeln('<col width="100px" />')
+     document.writeln('<col width="70px" />')
   }
   for (var i = 0; i < 5; i++) {
      document.writeln('<td align="center"><span id="top_name[' + i.toString() + ']">-</span></td>')
@@ -125,4 +148,3 @@ slider.value = (num_case/2).toString();
 
 </body>
 </html>
-
