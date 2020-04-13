@@ -19,19 +19,15 @@ div#d01 {
     text-align: center;
     padding-left: 1em;
 }
-H2#H01 {
-    margin: 0px;
-}
-p#p01 {
+H2 {
     margin: 0px;
 }
 </style>
 </head>
 <body>
 
-<H2 id="H01" align="center">COVID-19 Cases in U.S.</H2>
+<H2 align="center">COVID-19 Cases in U.S.</H2>
 <td><object id="svg-object" type="image/svg+xml" data="USA_Counties_with_FIPS_and_names.svg" ></object></td>
-<font size=2><p id="p01" align="center">Data Source: <a href="https://github.com/CSSEGISandData/COVID-19">CSSEGISandData/COVID-19</a></p></font>
 
     <script type="text/javascript" src="cases.js"></script>
     <script type="text/javascript">
@@ -145,6 +141,13 @@ slider.max = (num_case-1).toString();
 slider.value = (num_case/2).toString();
 </script>
 
+<div>
+<br>
+<p> SOURCES:<br>
+1) <a href="https://github.com/CSSEGISandData/COVID-19">CSSEGISandData/COVID-19<br></a>
+2) <a href="https://commons.wikimedia.org/wiki/File:USA_Counties.svg">File:USA Counties.svg</a>
+</p>
+</div>
 
 </body>
 </html>
