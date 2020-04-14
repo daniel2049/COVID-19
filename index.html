@@ -22,15 +22,81 @@ div#d01 {
 H2 {
     margin: 0px;
 }
+svg_map {
+  float: left;
+  width: 62%;
+}
+svg_button {
+  float: right;
+  width: 38%;
+}
+section:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
 </style>
 </head>
 <body>
 
 <H2 align="center">COVID-19 Cases in U.S.</H2>
-<td><object id="svg-object" type="image/svg+xml" data="USA_Counties_with_FIPS_and_names.svg" ></object></td>
+<section>
+<svg_map>
+<object id="svg-object" type="image/svg+xml" data="USA_Counties_with_FIPS_and_names.svg" ></object>
+</svg_map>
+<svg_button>
+<script>
+for (var i = 0; i < 17; i++) {
+   document.writeln('<br>');
+}
+</script>
+<input type="radio" id="map_us" name="us_region" onclick="resize_map('svg-object')">
+<label for="map_us">United States</label><br>
+<input type="radio" id="map_w" name="us_region" onclick="resize_map('svg-object')">
+<label for="map_w">Pacific West</label><br>
+<input type="radio" id="map_wm" name="us_region" onclick="resize_map('svg-object')">
+<label for="map_wm">Mountain States</label><br>
+<input type="radio" id="map_nc" name="us_region" onclick="resize_map('svg-object')">
+<label for="map_nc">North Central</label><br>
+<input type="radio" id="map_ne" name="us_region" onclick="resize_map('svg-object')">
+<label for="map_ne">North East</label><br>
+<input type="radio" id="map_se" name="us_region" onclick="resize_map('svg-object')">
+<label for="map_se">South East</label><br>
+<input type="radio" id="map_sc" name="us_region" onclick="resize_map('svg-object')">
+<label for="map_sc">South Central</label><br>
+<input type="radio" id="map_hi" name="us_region" onclick="resize_map('svg-object')">
+<label for="map_hi">Hawaii</label>
+</svg_button>
+</section>
 
     <script type="text/javascript" src="cases.js"></script>
     <script type="text/javascript">
+      function resize_map(id) {
+        var D=document.getElementById(id)
+	S=eval(D.nodeName)(D,id) //sends OBJECT to function OBJECT, EMBED to EMBED etc.
+	if (!S) return
+
+        e = S.getElementById('svg9559');
+        if (document.getElementById("map_us").checked) {
+           e.setAttribute("viewBox", "0 0 555 352");
+        } else if (document.getElementById("map_w").checked) {
+           e.setAttribute("viewBox", "0 0 185 225");
+        } else if (document.getElementById("map_wm").checked) {
+           e.setAttribute("viewBox", "0 13 285 241");
+        } else if (document.getElementById("map_nc").checked) {
+           e.setAttribute("viewBox", "185 30 270 170");
+        } else if (document.getElementById("map_ne").checked) {
+           e.setAttribute("viewBox", "350 40 200 80");
+        } else if (document.getElementById("map_se").checked) {
+           e.setAttribute("viewBox", "290 179 310 100");
+        } else if (document.getElementById("map_sc").checked) {
+           e.setAttribute("viewBox", "155 190 290 100");
+        } else if (document.getElementById("map_hi").checked) {
+           e.setAttribute("viewBox", "0 190 290 140");
+        }
+      }
+
       var first_flag = 1;
       var svg_title = [];
       function OBJECT(D){
@@ -38,7 +104,7 @@ H2 {
         catch(e){S=D.contentDocument}
         return S
       }
-      function fill_color(d) {
+      function fill_color(S, d) {
         for (var k in percent) {
            try { 
               e = S.getElementById(k)
@@ -66,7 +132,6 @@ H2 {
         var D=document.getElementById(id)
 	S=eval(D.nodeName)(D,id) //sends OBJECT to function OBJECT, EMBED to EMBED etc.
 	if (!S) return
-  	Root=S.documentElement;
 
         var slider = document.getElementById("myRange");
         var day = parseInt(slider.value);
@@ -75,21 +140,38 @@ H2 {
         slide_value.innerHTML = day_slide[day]
 
         var state = document.getElementById("choose-state").value
+        var last_found = -1
         for (var k in county_rank[state]) {
            for (var i = 0; i < 10; i++) {
               if (county_rank[state][k][day] == i) {
                  document.getElementById("top_name["+i.toString()+"]").innerHTML  = k
-                 document.getElementById("top_value["+i.toString()+"]").innerHTML = county_cases[state][k][day]
+                 var delta_str = ''
+                 if (day > 0) {
+                    var delta = county_cases[state][k][day] - county_cases[state][k][day-1]
+                    if (delta >= 0) {
+                       delta_str = "<font size='2'><br>(+"+delta.toString()+")</font>"
+                    } else {
+                       delta_str = "<font size='2'><br>("+delta.toString()+")</font>"
+                    }
+                 }
+                 document.getElementById("top_value["+i.toString()+"]").innerHTML = county_cases[state][k][day] + delta_str
+                 if (i > last_found) {
+                    last_found = i;
+                 }
               }
            }
         }
-        fill_color(day);
+        for (var i = last_found + 1; i < 10; i++) {
+           document.getElementById("top_name["+i.toString()+"]").innerHTML  = '-'
+           document.getElementById("top_value["+i.toString()+"]").innerHTML = '-'
+        }
+        fill_color(S, day);
       }
     </script>
 
 <div id="d01">
     <output class="lblFloat"><label>Date: <span id="myValue"></span></label></output>
-    <input type="range" id="myRange" min="1" max="100" oninput="update_map('svg-object')" />
+    <input type="range" id="myRange" min="0" max="100" oninput="update_map('svg-object')" />
 </div>
 
 <div>
