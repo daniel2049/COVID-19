@@ -1,1 +1,4 @@
-# sandbox
+# COVID-19 Map by US County and State in per-day basis
+A simple page provides number of confirm cases of COVID-19 in US:
+A map shows confirmed cases in each US county and state on a day selected by a timeline slider.
+A table shows 10 states or 10 counties in a selected state with the most confirmed cases.
