@@ -46,7 +46,7 @@ H2 {
 <input type="radio" id="map_hi" name="us_region" onclick="resize_map('svg-object')">
 <label for="map_hi">Hawaii</label>
 
-    <script type="text/javascript" src="cases.js"></script>
+    <script type="text/javascript" src="base_info.txt"></script>
     <script type="text/javascript">
       function resize_map(id) {
         var D=document.getElementById(id)
@@ -80,11 +80,11 @@ H2 {
         catch(e){S=D.contentDocument}
         return S
       }
-      function fill_color(S, d) {
+      function fill_color(S, percent, fips_cases) {
         for (var k in percent) {
            try { 
               e = S.getElementById(k)
-              var p = percent[k][d]
+              var p = percent[k]
               var color;
               if (p > 0) {
                  color = 'hsl(0, 100%,' + p.toString()+'%)';
@@ -95,7 +95,7 @@ H2 {
               if (first_flag == 1) {
                  svg_title[k] = e.children[0].innerHTML;
               }
-              var title_case = svg_title[k] + '\n' + fips_cases[k][d].toString()
+              var title_case = svg_title[k] + '\n' + fips_cases[k].toString()
               //var title_id = e.children[0].id
               //e.innerHTML = "\n   <title xmlns=\"http://www.w3.org/2000/svg\" id=\"" + title_id + "\">" + title_case + "</title>\n  "
               e.innerHTML = "\n   <title xmlns=\"http://www.w3.org/2000/svg\">" + title_case + "</title>\n  "
@@ -104,54 +104,85 @@ H2 {
         }
         first_flag = 0;
       }
-      function update_map(id) {
+      function read_cases1(id) {
+         var slider = document.getElementById("myRange");
+         var day = parseInt(slider.value);
+         var num_day_inc = document.getElementById("num_day_inc").value
+
+         var slide_value = document.getElementById("myValue");
+         slide_value.innerHTML = ' ' + day_slide[day]
+
+         var xhttp = new XMLHttpRequest();
+         xhttp.onreadystatechange = function() {
+           if (this.readyState == 4 && this.status == 200) {
+             eval(this.responseText);
+             if (day >= num_day_inc) {
+                read_cases2(id, day, num_day_inc, county_cases, county_rank, percent, fips_cases);
+             } else {
+                update_map(id, day, num_day_inc, county_cases, null, county_rank, percent, fips_cases);
+             }
+           }
+         };
+         xhttp.open("GET", "case_" + day_slide[day] + ".txt", true);
+         xhttp.send();
+      }
+      function read_cases2(id, day, num_day_inc, county_cases1, county_rank1, percent1, fips_cases1) {
+         var xhttp = new XMLHttpRequest();
+         xhttp.onreadystatechange = function() {
+           if (this.readyState == 4 && this.status == 200) {
+             eval(this.responseText);
+             update_map(id, day, num_day_inc, county_cases1, county_cases, county_rank1, percent1, fips_cases1);
+           }
+         };
+         xhttp.open("GET", "case_" + day_slide[day-num_day_inc] + ".txt", true);
+         xhttp.send();
+      }
+      function update_map(id, day, num_day_inc, county_cases1, county_cases2, county_rank, percent, fips_cases) {
         var D=document.getElementById(id)
 	S=eval(D.nodeName)(D,id) //sends OBJECT to function OBJECT, EMBED to EMBED etc.
 	if (!S) return
 
-        var slider = document.getElementById("myRange");
-        var day = parseInt(slider.value);
-
-        var slide_value = document.getElementById("myValue");
-        slide_value.innerHTML = day_slide[day]
-
         var state = document.getElementById("choose-state").value
         var last_found = -1
         for (var k in county_rank[state]) {
-           for (var i = 0; i < 10; i++) {
-              if (county_rank[state][k][day] == i) {
-                 document.getElementById("top_name["+i.toString()+"]").innerHTML  = k
-                 var delta_str = ''
-                 if (day > 0) {
-                    var delta = county_cases[state][k][day] - county_cases[state][k][day-1]
-                    if (delta >= 0) {
-                       delta_str = "<font size='2'><br>(+"+delta.toString()+")</font>"
-                    } else {
-                       delta_str = "<font size='2'><br>("+delta.toString()+")</font>"
-                    }
-                 }
-                 document.getElementById("top_value["+i.toString()+"]").innerHTML = county_cases[state][k][day] + delta_str
-                 if (i > last_found) {
-                    last_found = i;
-                 }
+           var i = county_rank[state][k];
+           document.getElementById("top_name["+i.toString()+"]").innerHTML  = k
+           var delta_str = ''
+           if (county_cases2 != null) {
+              var delta = county_cases1[state][k] - county_cases2[state][k];
+              if (delta >= 0) {
+                 delta_str = "<font size='2'><br>+" + delta.toString() + "</font>"
               }
+           }
+           document.getElementById("top_value["+i.toString()+"]").innerHTML = county_cases1[state][k] + delta_str 
+           if (i > last_found) {  // async
+              last_found = i;
            }
         }
         for (var i = last_found + 1; i < 10; i++) {
            document.getElementById("top_name["+i.toString()+"]").innerHTML  = '-'
            document.getElementById("top_value["+i.toString()+"]").innerHTML = '-'
         }
-        fill_color(S, day);
+        fill_color(S, percent, fips_cases);
       }
     </script>
 
 <div id="d01">
-    <output class="lblFloat"><label>Date: <span id="myValue"></span></label></output>
-    <input type="range" id="myRange" min="0" max="100" oninput="update_map('svg-object')" />
+    <output class="lblFloat"><label>Date:<span id="myValue"></span></label></output>
+    <input type="range" id="myRange" min="0" max="100" oninput="read_cases1('svg-object')" />
+    <label>Time Lapse:</label>
 </div>
 
 <div>
-<select id="choose-state" oninput=update_map('svg-object')>
+<label for "state">New cases in </label>
+<select id="choose-state" oninput=read_cases1('svg-object')>
+</select>
+<label for "growth"> in the past </label>
+<select id="num_day_inc" oninput=read_cases1('svg-object')>
+  <option value=1> 1 day</option>
+  <option value=3> 3 days</option>
+  <option value=7> 7 days</option>
+  <option value=14> 14 days</option>
 </select>
 </div>
 <script>
