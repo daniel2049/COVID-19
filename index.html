@@ -123,7 +123,7 @@ H2 {
              }
            }
          };
-         xhttp.open("GET", "/data/case_" + day_slide[day] + ".txt", true);
+         xhttp.open("GET", "/COVID-19/data/case_" + day_slide[day] + ".txt", true);
          xhttp.send();
       }
       function read_cases2(id, day, num_day_inc, county_cases1, county_rank1, percent1, fips_cases1) {
@@ -134,7 +134,7 @@ H2 {
              update_map(id, day, num_day_inc, county_cases1, county_cases, county_rank1, percent1, fips_cases1);
            }
          };
-         xhttp.open("GET", "/data/case_" + data/day_slide[day-num_day_inc] + ".txt", true);
+         xhttp.open("GET", "/COVID-19/data/case_" + data/day_slide[day-num_day_inc] + ".txt", true);
          xhttp.send();
       }
       function update_map(id, day, num_day_inc, county_cases1, county_cases2, county_rank, percent, fips_cases) {
