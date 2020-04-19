@@ -46,7 +46,7 @@ H2 {
 <input type="radio" id="map_hi" name="us_region" onclick="resize_map('svg-object')">
 <label for="map_hi">Hawaii</label>
 
-    <script type="text/javascript" src="base_info.txt"></script>
+    <script type="text/javascript" src="data/base_info.txt"></script>
     <script type="text/javascript">
       function resize_map(id) {
         var D=document.getElementById(id)
@@ -123,7 +123,7 @@ H2 {
              }
            }
          };
-         xhttp.open("GET", "case_" + day_slide[day] + ".txt", true);
+         xhttp.open("GET", "case_" + data/day_slide[day] + ".txt", true);
          xhttp.send();
       }
       function read_cases2(id, day, num_day_inc, county_cases1, county_rank1, percent1, fips_cases1) {
@@ -134,7 +134,7 @@ H2 {
              update_map(id, day, num_day_inc, county_cases1, county_cases, county_rank1, percent1, fips_cases1);
            }
          };
-         xhttp.open("GET", "case_" + day_slide[day-num_day_inc] + ".txt", true);
+         xhttp.open("GET", "case_" + data/day_slide[day-num_day_inc] + ".txt", true);
          xhttp.send();
       }
       function update_map(id, day, num_day_inc, county_cases1, county_cases2, county_rank, percent, fips_cases) {
