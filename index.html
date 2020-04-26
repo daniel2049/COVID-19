@@ -27,14 +27,27 @@ H2 {
 <body>
 
 <H2 align="center">COVID-19 Cases in U.S.</H2>
+<svg width="749.55" height="15" >
+ <text x="500" y="10" font-family="sans-serif" font-size="10px" fill="black">1</text>
+ <rect x="500" y="12" width="50" height="3" style="fill:hsl(0, 100%, 90%)"></rect>
+ <text x="550" y="10" font-family="sans-serif" font-size="10px" fill="black">101</text>
+ <rect x="550" y="12" width="50" height="3" style="fill:hsl(0, 100%, 73%)"></rect>
+ <text x="600" y="10" font-family="sans-serif" font-size="10px" fill="black">1001</text>
+ <rect x="600" y="12" width="50" height="3" style="fill:hsl(0, 100%, 56%)"></rect>
+ <text x="650" y="10" font-family="sans-serif" font-size="10px" fill="black">5001</text>
+ <rect x="650" y="12" width="50" height="3" style="fill:hsl(0, 100%, 39%)"></rect>
+ <text x="700" y="10" font-family="sans-serif" font-size="10px" fill="black">10001+</text>
+ <rect x="700" y="12" width="50" height="3" style="fill:hsl(0, 100%, 22%)"></rect>
+</svg>
+<br>
 <object id="svg-object" type="image/svg+xml" data="USA_Counties_with_FIPS_and_names.svg" ></object>
 
     <script type="text/javascript" src="data/base_info.txt"></script>
     <script type="text/javascript">
-      function resize_map(S) {
+      function resize_map(S, state) {
 	var region_box = {'USA':"0 0 555 352", 'Alabama':"280 170 225 143", 'Alaska':"-30 220 225 143", 'Arizona':"30 130 225 143", 'Arkansas':"220 140 225 143", 'California':"-50 82 225 143", 'Colorado':"80 70 225 143", 'Connecticut':"400 10 225 143", 'Delaware':"380 60 225 143", 'District of Columbia':"350 60 225 143", 'Florida':"300 220 225 143", 'Georgia':"300 190 225 143", 'Hawaii':"80 250 225 143", 'Idaho':"20 -10 225 143", 'Illinois':"230 70 225 143", 'Indiana':"280 70 225 143", 'Iowa':"200 40 225 143", 'Kansas':"140 90 225 143", 'Kentucky':"280 90 225 143", 'Louisiana':"220 190 225 143", 'Maine':"400 -30 225 143", 'Maryland':"350 60 225 143", 'Massachusetts':"400 0 225 143", 'Michigan':"270 20 225 143", 'Minnesota':"200 -10 225 143", 'Mississippi':"260 170 225 143", 'Missouri':"210 90 225 143", 'Montana':"40 -20 225 143", 'Nebraska':"135 50 225 143", 'Nevada':"0 70 225 143", 'New Hampshire':"400 -10 225 143", 'New Jersey':"380 20 225 143", 'New Mexico':"80 130 225 143", 'New York':"360 0 225 143", 'North Carolina':"320 130 225 143", 'North Dakota':"135 -20 225 143", 'Ohio':"300 60 225 143", 'Oklahoma':"140 130 225 143", 'Oregon':"-30 -10 225 143", 'Pennsylvania':"360 50 225 143", 'Rhode Island':"400 10 225 143", 'South Carolina':"320 160 225 143", 'South Dakota':"135 10 225 143", 'Tennessee':"280 120 225 143", 'Texas':"140 190 225 143", 'Utah':"30 70 225 143", 'Vermont':"380 -10 225 143", 'Virginia':"320 90 225 143", 'Washington':"-30 -40 225 143", 'West Virginia':"320 90 225 143", 'Wisconsin':"230 10 225 143", 'Wyoming':"70 20 225 143"};
         e = S.getElementById('svg9559');
-        e.setAttribute("viewBox", region_box);
+        e.setAttribute("viewBox", region_box[state]);
       }
 
       var first_flag = 1;
@@ -161,7 +174,7 @@ H2 {
            }
         });
 
-        resize_map(S);
+        resize_map(S, state);
 
         // Sort the array based on the second element
         top_county.sort(function(first, second) {
