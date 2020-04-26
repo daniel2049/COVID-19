@@ -27,50 +27,27 @@ H2 {
 <body>
 
 <H2 align="center">COVID-19 Cases in U.S.</H2>
-<object id="svg-object" type="image/svg+xml" data="USA_Counties_with_FIPS_and_names.svg" ></object>
+<svg width="749.55" height="15" >
+ <text x="500" y="10" font-family="sans-serif" font-size="10px" fill="black">1</text>
+ <rect x="500" y="12" width="50" height="3" style="fill:hsl(0, 100%, 90%)"></rect>
+ <text x="550" y="10" font-family="sans-serif" font-size="10px" fill="black">101</text>
+ <rect x="550" y="12" width="50" height="3" style="fill:hsl(0, 100%, 73%)"></rect>
+ <text x="600" y="10" font-family="sans-serif" font-size="10px" fill="black">1001</text>
+ <rect x="600" y="12" width="50" height="3" style="fill:hsl(0, 100%, 56%)"></rect>
+ <text x="650" y="10" font-family="sans-serif" font-size="10px" fill="black">5001</text>
+ <rect x="650" y="12" width="50" height="3" style="fill:hsl(0, 100%, 39%)"></rect>
+ <text x="700" y="10" font-family="sans-serif" font-size="10px" fill="black">10001+</text>
+ <rect x="700" y="12" width="50" height="3" style="fill:hsl(0, 100%, 22%)"></rect>
+</svg> 
 <br>
-<input type="radio" id="map_us" name="us_region" checked onclick="resize_map('svg-object')">
-<label for="map_us">United States</label>
-<input type="radio" id="map_w" name="us_region" onclick="resize_map('svg-object')">
-<label for="map_w">Pacific West</label>
-<input type="radio" id="map_wm" name="us_region" onclick="resize_map('svg-object')">
-<label for="map_wm">Mountain States</label>
-<input type="radio" id="map_nc" name="us_region" onclick="resize_map('svg-object')">
-<label for="map_nc">North Central</label>
-<input type="radio" id="map_ne" name="us_region" onclick="resize_map('svg-object')">
-<label for="map_ne">North East</label>
-<input type="radio" id="map_se" name="us_region" onclick="resize_map('svg-object')">
-<label for="map_se">South East</label>
-<input type="radio" id="map_sc" name="us_region" onclick="resize_map('svg-object')">
-<label for="map_sc">South Central</label>
-<input type="radio" id="map_hi" name="us_region" onclick="resize_map('svg-object')">
-<label for="map_hi">Hawaii</label>
+<object id="svg-object" type="image/svg+xml" data="USA_Counties_with_FIPS_and_names.svg" ></object>
 
+    <script type="text/javascript" src="region_box.txt"></script>
     <script type="text/javascript" src="data/base_info.txt"></script>
     <script type="text/javascript">
-      function resize_map(id) {
-        var D=document.getElementById(id)
-	S=eval(D.nodeName)(D,id) //sends OBJECT to function OBJECT, EMBED to EMBED etc.
-	if (!S) return
-
+      function resize_map(S, region_box) {
         e = S.getElementById('svg9559');
-        if (document.getElementById("map_us").checked) {
-           e.setAttribute("viewBox", "0 0 555 352");
-        } else if (document.getElementById("map_w").checked) {
-           e.setAttribute("viewBox", "0 0 185 225");
-        } else if (document.getElementById("map_wm").checked) {
-           e.setAttribute("viewBox", "0 13 285 241");
-        } else if (document.getElementById("map_nc").checked) {
-           e.setAttribute("viewBox", "185 30 270 170");
-        } else if (document.getElementById("map_ne").checked) {
-           e.setAttribute("viewBox", "350 40 200 80");
-        } else if (document.getElementById("map_se").checked) {
-           e.setAttribute("viewBox", "290 179 310 100");
-        } else if (document.getElementById("map_sc").checked) {
-           e.setAttribute("viewBox", "155 190 290 100");
-        } else if (document.getElementById("map_hi").checked) {
-           e.setAttribute("viewBox", "0 190 290 140");
-        }
+        e.setAttribute("viewBox", region_box);
       }
 
       var first_flag = 1;
@@ -80,11 +57,44 @@ H2 {
         catch(e){S=D.contentDocument}
         return S
       }
-      function fill_color(S, percent, fips_cases) {
-        for (var k in percent) {
+      function case_to_percent(num) {
+        var p;
+        var scaled_p;
+        if (num >= 1 && num <= 100) {
+          p = (num/100.0)*20.0;
+        } else if (num >= 101 && num <= 1000) {
+          p = 20.0 + ((num-100.0)/900.0)*20.0;
+        } else if (num >= 1001 && num <= 5000) {
+          p = 40.0 + ((num-1000.0)/4000.0)*20.0;
+        } else if (num >= 5001 && num <= 10000) {
+          p = 60.0 + ((num-5000.0)/5000.0)*20.0;
+        } else if (num >= 10001) {
+          p = 80.0 + ((num-10000.0)/20000.0)*20.0;
+        } else {
+          return 0;
+        }
+        if (p > 100.0) {
+           p = 100.0
+        }
+        return (5.0 + (100.0 - p)*85.0/100.0);
+      }
+      function fill_color(S, fips_cases1, fips_death1, fips_cases2, fips_death2) {
+        for (var k in fips_cases1) {
            try { 
               e = S.getElementById(k)
-              var p = percent[k]
+              var delta_cases;
+              if (fips_cases2 != null) {
+                 delta_cases = fips_cases1[k] - fips_cases2[k];
+              } else {
+                 delta_cases = fips_cases1[k];
+              }
+              var delta_death;
+              if (fips_death2 != null) {
+                 delta_death = fips_death1[k] - fips_death2[k];
+              } else {
+                 delta_death = fips_death1[k];
+              }
+              var p = case_to_percent(delta_cases);
               var color;
               if (p > 0) {
                  color = 'hsl(0, 100%,' + p.toString()+'%)';
@@ -95,7 +105,7 @@ H2 {
               if (first_flag == 1) {
                  svg_title[k] = e.children[0].innerHTML;
               }
-              var title_case = svg_title[k] + '\n' + fips_cases[k].toString()
+              var title_case = svg_title[k] + '\n' + 'cases: ' + delta_cases.toString() + '\n' + 'death: ' + delta_death.toString()
               //var title_id = e.children[0].id
               //e.innerHTML = "\n   <title xmlns=\"http://www.w3.org/2000/svg\" id=\"" + title_id + "\">" + title_case + "</title>\n  "
               e.innerHTML = "\n   <title xmlns=\"http://www.w3.org/2000/svg\">" + title_case + "</title>\n  "
@@ -109,52 +119,82 @@ H2 {
          var day = parseInt(slider.value);
          var num_day_inc = document.getElementById("num_day_inc").value
 
-         var slide_value = document.getElementById("myValue");
-         slide_value.innerHTML = ' ' + day_slide[day]
+         var start_day = document.getElementById("startDay");
+         var end_day = document.getElementById("endDay");
+         if (day >= num_day_inc) {
+            start_day.innerHTML = day_slide[day-num_day_inc]
+         } else {
+            start_day.innerHTML = day_slide[0]
+         }
+         end_day.innerHTML = day_slide[day]
 
          var xhttp = new XMLHttpRequest();
          xhttp.onreadystatechange = function() {
            if (this.readyState == 4 && this.status == 200) {
-             eval(this.responseText);
+             var obj = JSON.parse(this.responseText);
+             var fips_cases = obj.fips_cases
+             var fips_death = obj.fips_death
+             var county_cases = obj.county_cases
              if (day >= num_day_inc) {
-                read_cases2(id, day, num_day_inc, county_cases, county_rank, percent, fips_cases);
+                read_cases2(id, day, num_day_inc, county_cases, fips_cases, fips_death);
              } else {
-                update_map(id, day, num_day_inc, county_cases, null, county_rank, percent, fips_cases);
+                update_map(id, day, num_day_inc, county_cases, null, fips_cases, fips_death);
              }
            }
          };
-         xhttp.open("GET", "/COVID-19/data/case_" + day_slide[day] + ".txt", true);
+         xhttp.open("GET", "/COVID-19/data2/case_" + day_slide[day] + ".txt", true);
          xhttp.send();
       }
-      function read_cases2(id, day, num_day_inc, county_cases1, county_rank1, percent1, fips_cases1) {
+      function read_cases2(id, day, num_day_inc, county_cases1, fips_cases1, fips_death1) {
          var xhttp = new XMLHttpRequest();
          xhttp.onreadystatechange = function() {
            if (this.readyState == 4 && this.status == 200) {
-             eval(this.responseText);
-             update_map(id, day, num_day_inc, county_cases1, county_cases, county_rank1, percent1, fips_cases1);
+             var obj = JSON.parse(this.responseText);
+             var fips_cases = obj.fips_cases
+             var fips_death = obj.fips_death
+             var county_cases = obj.county_cases
+             update_map(id, day, num_day_inc, county_cases1, county_cases, fips_cases1, fips_death1, fips_cases, fips_death);
            }
          };
-         xhttp.open("GET", "/COVID-19/data/case_" + day_slide[day-num_day_inc] + ".txt", true);
+         xhttp.open("GET", "/COVID-19/data2/case_" + day_slide[day-num_day_inc] + ".txt", true);
          xhttp.send();
       }
-      function update_map(id, day, num_day_inc, county_cases1, county_cases2, county_rank, percent, fips_cases) {
+      function update_map(id, day, num_day_inc, county_cases1, county_cases2, fips_cases1, fips_death1, fips_cases2, fips_death2) {
         var D=document.getElementById(id)
 	S=eval(D.nodeName)(D,id) //sends OBJECT to function OBJECT, EMBED to EMBED etc.
 	if (!S) return
 
         var state = document.getElementById("choose-state").value
-        var last_found = -1
-        for (var k in county_rank[state]) {
-           var i = county_rank[state][k];
-           document.getElementById("top_name["+i.toString()+"]").innerHTML  = k
-           var delta_str = ''
+        // Create items array
+        var top_county = Object.keys(county_cases1[state]).map(function(key) {
            if (county_cases2 != null) {
-              var delta = county_cases1[state][k] - county_cases2[state][k];
-              if (delta >= 0) {
-                 delta_str = "<font size='2'><br>+" + delta.toString() + "</font>"
-              }
+              return [key, county_cases1[state][key]-county_cases2[state][key]];
+           } else {
+              return [key, county_cases1[state][key]];
            }
-           document.getElementById("top_value["+i.toString()+"]").innerHTML = county_cases1[state][k] + delta_str 
+        });
+
+        resize_map(S, region_box[state]);
+
+        // Sort the array based on the second element
+        top_county.sort(function(first, second) {
+  	   if (first[1] > second[1]) return -1;
+	   else return 1;
+        });
+        var last_found = -1
+        var n;
+        if (top_county.length >= 10) n = 10;
+        else n = top_county.length;
+        for (var i = 0; i < n; i=i+1) {
+           var k = top_county[i][0];
+           document.getElementById("top_name["+i.toString()+"]").innerHTML  = k
+           var delta = 0;
+           if (county_cases2 != null) {
+              delta = county_cases1[state][k] - county_cases2[state][k];
+           } else {
+              delta = county_cases1[state][k]
+           }
+           document.getElementById("top_value["+i.toString()+"]").innerHTML = delta
            if (i > last_found) {  // async
               last_found = i;
            }
@@ -163,12 +203,12 @@ H2 {
            document.getElementById("top_name["+i.toString()+"]").innerHTML  = '-'
            document.getElementById("top_value["+i.toString()+"]").innerHTML = '-'
         }
-        fill_color(S, percent, fips_cases);
+        fill_color(S, fips_cases1, fips_death1, fips_cases2, fips_death2);
       }
     </script>
 
 <div id="d01">
-    <output class="lblFloat"><label>Date:<span id="myValue"></span></label></output>
+    <output class="lblFloat"></output>
     <input type="range" id="myRange" min="0" max="100" oninput="read_cases1('svg-object')" />
     <label>Time Lapse:</label>
 </div>
@@ -177,13 +217,14 @@ H2 {
 <label for "state">New cases in </label>
 <select id="choose-state" oninput=read_cases1('svg-object')>
 </select>
-<label for "growth"> in the past </label>
+<label> in </label>
 <select id="num_day_inc" oninput=read_cases1('svg-object')>
-  <option value=1> 1 day</option>
-  <option value=3> 3 days</option>
-  <option value=7> 7 days</option>
-  <option value=14> 14 days</option>
+  <option value=Infinity>all</option>
+  <option value=3>3</option>
+  <option value=7>7</option>
+  <option value=14>14</option>
 </select>
+<label> days from <span id="startDay"></span> to <span id="endDay"></span><label>
 </div>
 <script>
    function add_element(state) {
@@ -227,7 +268,13 @@ H2 {
 <script>
 var slider = document.getElementById("myRange");
 slider.max = (num_case-1).toString();
-slider.value = (num_case/2).toString();
+slider.value = (num_case-1).toString();
+</script>
+
+<script>
+  window.onload = function() {
+    read_cases1('svg-object')
+  };
 </script>
 
 <div>
