@@ -27,20 +27,7 @@ H2 {
 <body>
 
 <H2 align="center">COVID-19 Cases in U.S.</H2>
-<svg width="749.55" height="15" >
- <text x="500" y="10" font-family="sans-serif" font-size="10px" fill="black">1</text>
- <rect x="500" y="12" width="50" height="3" style="fill:hsl(0, 100%, 90%)"></rect>
- <text x="550" y="10" font-family="sans-serif" font-size="10px" fill="black">101</text>
- <rect x="550" y="12" width="50" height="3" style="fill:hsl(0, 100%, 73%)"></rect>
- <text x="600" y="10" font-family="sans-serif" font-size="10px" fill="black">1001</text>
- <rect x="600" y="12" width="50" height="3" style="fill:hsl(0, 100%, 56%)"></rect>
- <text x="650" y="10" font-family="sans-serif" font-size="10px" fill="black">5001</text>
- <rect x="650" y="12" width="50" height="3" style="fill:hsl(0, 100%, 39%)"></rect>
- <text x="700" y="10" font-family="sans-serif" font-size="10px" fill="black">10001+</text>
- <rect x="700" y="12" width="50" height="3" style="fill:hsl(0, 100%, 22%)"></rect>
-</svg>
-<br>
-<object id="svg-object" type="image/svg+xml" data="USA_Counties_with_FIPS_and_names.svg" ></object>
+<object id="svg-object" width="90%" type="image/svg+xml" data="USA_Counties_with_FIPS_and_names.svg" ></object>
 
     <script type="text/javascript" src="data/base_info.txt"></script>
     <script type="text/javascript">
@@ -208,6 +195,18 @@ H2 {
     </script>
 
 <div id="d01">
+ <svg width="749.55" height="15" >
+ <text x="100" y="10" font-family="sans-serif" font-size="10px" fill="black">1</text>
+ <rect x="100" y="12" width="50" height="3" style="fill:hsl(0, 100%, 90%)"></rect>
+ <text x="150" y="10" font-family="sans-serif" font-size="10px" fill="black">101</text>
+ <rect x="150" y="12" width="50" height="3" style="fill:hsl(0, 100%, 73%)"></rect>
+ <text x="200" y="10" font-family="sans-serif" font-size="10px" fill="black">1001</text>
+ <rect x="200" y="12" width="50" height="3" style="fill:hsl(0, 100%, 56%)"></rect>
+ <text x="250" y="10" font-family="sans-serif" font-size="10px" fill="black">5001</text>
+ <rect x="250" y="12" width="50" height="3" style="fill:hsl(0, 100%, 39%)"></rect>
+ <text x="300" y="10" font-family="sans-serif" font-size="10px" fill="black">10001+</text>
+ <rect x="300" y="12" width="50" height="3" style="fill:hsl(0, 100%, 22%)"></rect>
+</svg>
     <output class="lblFloat"></output>
     <input type="range" id="myRange" min="0" max="100" oninput="read_cases1('svg-object')" />
     <label>Time Lapse:</label>
