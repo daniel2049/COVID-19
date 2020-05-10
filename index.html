@@ -29,12 +29,12 @@ H2 {
 <H2 align="center">COVID-19 Cases in U.S.</H2>
 <object id="svg-object" width="80%" type="image/svg+xml" data="USA_Counties_with_FIPS_and_names.svg" ></object>
 
-    <script type="text/javascript" src="data2/base_info.txt"></script>
+    <script type="text/javascript" src="region_box.js"></script>
+    <script type="text/javascript" src="data/base_info.js"></script>
     <script type="text/javascript">
-      function resize_map(S, state) {
-	var region_box = {'USA':"0 0 555 352", 'Alabama':"280 170 225 143", 'Alaska':"-30 220 225 143", 'Arizona':"30 130 225 143", 'Arkansas':"220 140 225 143", 'California':"-50 82 225 143", 'Colorado':"80 70 225 143", 'Connecticut':"400 10 225 143", 'Delaware':"380 60 225 143", 'District of Columbia':"350 60 225 143", 'Florida':"300 220 225 143", 'Georgia':"300 190 225 143", 'Hawaii':"80 250 225 143", 'Idaho':"20 -10 225 143", 'Illinois':"230 70 225 143", 'Indiana':"280 70 225 143", 'Iowa':"200 40 225 143", 'Kansas':"140 90 225 143", 'Kentucky':"280 90 225 143", 'Louisiana':"220 190 225 143", 'Maine':"400 -30 225 143", 'Maryland':"350 60 225 143", 'Massachusetts':"400 0 225 143", 'Michigan':"270 20 225 143", 'Minnesota':"200 -10 225 143", 'Mississippi':"260 170 225 143", 'Missouri':"210 90 225 143", 'Montana':"40 -20 225 143", 'Nebraska':"135 50 225 143", 'Nevada':"0 70 225 143", 'New Hampshire':"400 -10 225 143", 'New Jersey':"380 20 225 143", 'New Mexico':"80 130 225 143", 'New York':"360 0 225 143", 'North Carolina':"320 130 225 143", 'North Dakota':"135 -20 225 143", 'Ohio':"300 60 225 143", 'Oklahoma':"140 130 225 143", 'Oregon':"-30 -10 225 143", 'Pennsylvania':"360 50 225 143", 'Rhode Island':"400 10 225 143", 'South Carolina':"320 160 225 143", 'South Dakota':"135 10 225 143", 'Tennessee':"280 120 225 143", 'Texas':"140 190 225 143", 'Utah':"30 70 225 143", 'Vermont':"380 -10 225 143", 'Virginia':"320 90 225 143", 'Washington':"-30 -40 225 143", 'West Virginia':"320 90 225 143", 'Wisconsin':"230 10 225 143", 'Wyoming':"70 20 225 143"};
+      function resize_map(S, region_box) {
         e = S.getElementById('svg9559');
-        e.setAttribute("viewBox", region_box[state]);
+        e.setAttribute("viewBox", region_box);
       }
 
       var first_flag = 1;
@@ -68,7 +68,8 @@ H2 {
       function fill_color(S, fips_cases1, fips_death1, fips_cases2, fips_death2) {
         for (var k in fips_cases1) {
            try { 
-              e = S.getElementById(k)
+              var fips_id = 'FIPS_' + k;
+              e = S.getElementById(fips_id)
               var delta_cases;
               if (fips_cases2 != null) {
                  delta_cases = fips_cases1[k] - fips_cases2[k];
@@ -90,9 +91,9 @@ H2 {
               }
               e.setAttributeNS(null, 'fill', color);
               if (first_flag == 1) {
-                 svg_title[k] = e.children[0].innerHTML;
+                 svg_title[fips_id] = e.children[0].innerHTML;
               }
-              var title_case = svg_title[k] + '\n' + 'cases: ' + delta_cases.toString() + '\n' + 'death: ' + delta_death.toString()
+              var title_case = svg_title[fips_id] + '\n' + 'cases: ' + delta_cases.toString() + '\n' + 'death: ' + delta_death.toString()
               //var title_id = e.children[0].id
               //e.innerHTML = "\n   <title xmlns=\"http://www.w3.org/2000/svg\" id=\"" + title_id + "\">" + title_case + "</title>\n  "
               e.innerHTML = "\n   <title xmlns=\"http://www.w3.org/2000/svg\">" + title_case + "</title>\n  "
@@ -129,7 +130,7 @@ H2 {
              }
            }
          };
-         xhttp.open("GET", "/COVID-19/data2/case_" + day_slide[day] + ".txt", true);
+         xhttp.open("GET", "/COVID-19/data/case_" + day_slide[day] + ".txt", true);
          xhttp.send();
       }
       function read_cases2(id, day, num_day_inc, county_cases1, fips_cases1, fips_death1) {
@@ -143,7 +144,7 @@ H2 {
              update_map(id, day, num_day_inc, county_cases1, county_cases, fips_cases1, fips_death1, fips_cases, fips_death);
            }
          };
-         xhttp.open("GET", "/COVID-19/data2/case_" + day_slide[day-num_day_inc] + ".txt", true);
+         xhttp.open("GET", "/COVID-19/data/case_" + day_slide[day-num_day_inc] + ".txt", true);
          xhttp.send();
       }
       function update_map(id, day, num_day_inc, county_cases1, county_cases2, fips_cases1, fips_death1, fips_cases2, fips_death2) {
@@ -161,7 +162,7 @@ H2 {
            }
         });
 
-        resize_map(S, state);
+        resize_map(S, region_box[state]);
 
         // Sort the array based on the second element
         top_county.sort(function(first, second) {
@@ -195,7 +196,7 @@ H2 {
     </script>
 
 <div id="d01">
- <svg width="749.55" height="15" >
+<svg width="749.55" height="15" >
  <text x="100" y="10" font-family="sans-serif" font-size="10px" fill="black">1</text>
  <rect x="100" y="12" width="50" height="3" style="fill:hsl(0, 100%, 90%)"></rect>
  <text x="150" y="10" font-family="sans-serif" font-size="10px" fill="black">101</text>
