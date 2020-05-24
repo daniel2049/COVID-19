@@ -82,7 +82,12 @@ H2 {
               } else {
                  delta_death = fips_death1[k];
               }
-              var p = case_to_percent(delta_cases);
+              var case_sel = document.getElementById("case_sel").value
+              if (case_sel == 2) {
+                 var p = case_to_percent(delta_cases);
+              } else {
+                 var p = case_to_percent(delta_death);
+              }
               var color;
               if (p > 0) {
                  color = 'hsl(0, 100%,' + p.toString()+'%)';
@@ -214,7 +219,11 @@ H2 {
 </div>
 
 <div>
-<label for "state">New cases in </label>
+<select id="case_sel" oninput=read_cases1('svg-object')>
+  <option value=1>Death</option>
+  <option value=2 selected>New</option>
+</select>
+<label for "state"> cases in </label>
 <select id="choose-state" oninput=read_cases1('svg-object')>
 </select>
 <label> in </label>
