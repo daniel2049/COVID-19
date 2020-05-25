@@ -32,6 +32,13 @@ H2 {
     <script type="text/javascript" src="region_box.js"></script>
     <script type="text/javascript" src="data/base_info.js"></script>
     <script type="text/javascript">
+      var fips_cases1;
+      var fips_death1;
+      var county_cases1;
+      var fips_cases2;
+      var fips_death2;
+      var county_cases2;
+
       function resize_map(S, region_box) {
         e = S.getElementById('svg9559');
         e.setAttribute("viewBox", region_box);
@@ -142,25 +149,35 @@ H2 {
              var county_cases = obj.county_cases
              var county_death_cases = obj.county_death_cases
              var case_sel = document.getElementById("case_sel").value
+             fips_cases1 = fips_cases;
+             fips_death1 = fips_death;
              if (day >= num_day_inc) {
                 if (case_sel == 2) {
-                   read_cases2(id, day, num_day_inc, county_cases, fips_cases, fips_death);
+                   county_cases1 = county_cases;
+                   read_cases2(id, day, num_day_inc);
                 } else {
-                   read_cases2(id, day, num_day_inc, county_death_cases, fips_cases, fips_death);
+                   county_cases1 = county_death_cases;
+                   read_cases2(id, day, num_day_inc);
                 }
              } else {
+                fips_cases2 = null;
+                fips_death2 = null;
+                county_cases2 = null;
                 if (case_sel == 2) {
-                   update_map(id, day, num_day_inc, county_cases, null, fips_cases, fips_death);
+                   county_cases1 = county_cases;
+                   update_map(id);
                 } else {
-                   update_map(id, day, num_day_inc, county_death_cases, null, fips_cases, fips_death);
+                   county_cases1 = county_death_cases;
+                   update_map(id);
                 }
              }
            }
          };
+         console.log('read_cases1');
          xhttp.open("GET", "/COVID-19/data/case_" + day_slide[day] + ".txt", true);
          xhttp.send();
       }
-      function read_cases2(id, day, num_day_inc, county_cases1, fips_cases1, fips_death1) {
+      function read_cases2(id, day, num_day_inc) {
          var xhttp = new XMLHttpRequest();
          xhttp.onreadystatechange = function() {
            if (this.readyState == 4 && this.status == 200) {
@@ -170,17 +187,26 @@ H2 {
              var county_cases = obj.county_cases
              var county_death_cases = obj.county_death_cases
              var case_sel = document.getElementById("case_sel").value
+             fips_cases2 = fips_cases;
+             fips_death2 = fips_death;
              if (case_sel == 2) {
-                update_map(id, day, num_day_inc, county_cases1, county_cases, fips_cases1, fips_death1, fips_cases, fips_death);
+                county_cases2 = county_cases;
+                update_map(id);
              } else {
-                update_map(id, day, num_day_inc, county_cases1, county_death_cases, fips_cases1, fips_death1, fips_cases, fips_death);
+                county_cases2 = county_death_cases;
+                update_map(id);
              }
            }
          };
+         console.log('read_cases1');
          xhttp.open("GET", "/COVID-19/data/case_" + day_slide[day-num_day_inc] + ".txt", true);
          xhttp.send();
       }
-      function update_map(id, day, num_day_inc, county_cases1, county_cases2, fips_cases1, fips_death1, fips_cases2, fips_death2) {
+      function update_map(id) {
+        var slider = document.getElementById("myRange");
+        var day = parseInt(slider.value);
+        var num_day_inc = document.getElementById("num_day_inc").value
+
         var D=document.getElementById(id)
 	S=eval(D.nodeName)(D,id) //sends OBJECT to function OBJECT, EMBED to EMBED etc.
 	if (!S) return
@@ -247,12 +273,12 @@ H2 {
 </div>
 
 <div>
-<select id="case_sel" oninput=read_cases1('svg-object')>
+<select id="case_sel" oninput=update_map('svg-object')>
   <option value=1>Death</option>
   <option value=2 selected>New</option>
 </select>
 <label for "state"> cases in </label>
-<select id="choose-state" oninput=read_cases1('svg-object')>
+<select id="choose-state" oninput=update_map('svg-object')>
 </select>
 <label> in </label>
 <select id="num_day_inc" oninput=read_cases1('svg-object')>
