@@ -99,10 +99,12 @@ H2 {
               var color;
               if (match && p > 0) {
                  color = 'hsl(0, 100%,' + p.toString()+'%)';
-              } else if (match || p == 0) {
+              } else if (match) {
                  color = "#d0d0d0";
-              } else {
+              } else if (p > 0) {
                  color = 'hsl(0, 10%,' + p.toString()+'%)';
+              } else {
+                 color = "#f0f0f0";
               }
               e.setAttributeNS(null, 'fill', color);
               if (first_flag == 1) {
