@@ -88,11 +88,21 @@ H2 {
               } else {
                  var p = case_to_percent(delta_death);
               }
+              var state = document.getElementById("choose-state").value
+              var fips_prefix = state_to_fips[state];
+              var match = false;
+              if (state == 'USA') {
+                 match = true;
+              } else if (k.substring(0, 2) == fips_prefix) {
+                 match = true;
+              }
               var color;
-              if (p > 0) {
+              if (match && p > 0) {
                  color = 'hsl(0, 100%,' + p.toString()+'%)';
-              } else {
+              } else if (match || p == 0) {
                  color = "#d0d0d0";
+              } else {
+                 color = 'hsl(0, 10%,' + p.toString()+'%)';
               }
               e.setAttributeNS(null, 'fill', color);
               if (first_flag == 1) {
