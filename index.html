@@ -34,10 +34,12 @@ H2 {
     <script type="text/javascript">
       var fips_cases1;
       var fips_death1;
-      var county_cases1;
+      var county_new_cases1;
+      var county_death_cases1;
       var fips_cases2;
       var fips_death2;
-      var county_cases2;
+      var county_new_cases2;
+      var county_death_cases2;
 
       function resize_map(S, region_box) {
         e = S.getElementById('svg9559');
@@ -144,36 +146,21 @@ H2 {
          xhttp.onreadystatechange = function() {
            if (this.readyState == 4 && this.status == 200) {
              var obj = JSON.parse(this.responseText);
-             var fips_cases = obj.fips_cases
-             var fips_death = obj.fips_death
-             var county_cases = obj.county_cases
-             var county_death_cases = obj.county_death_cases
-             var case_sel = document.getElementById("case_sel").value
-             fips_cases1 = fips_cases;
-             fips_death1 = fips_death;
+             fips_cases1 = obj.fips_cases
+             fips_death1 = obj.fips_death
+             county_new_cases1 = obj.county_cases
+             county_death_cases1 = obj.county_death_cases
              if (day >= num_day_inc) {
-                if (case_sel == 2) {
-                   county_cases1 = county_cases;
-                   read_cases2(id, day, num_day_inc);
-                } else {
-                   county_cases1 = county_death_cases;
-                   read_cases2(id, day, num_day_inc);
-                }
+                read_cases2(id, day, num_day_inc);
              } else {
                 fips_cases2 = null;
                 fips_death2 = null;
-                county_cases2 = null;
-                if (case_sel == 2) {
-                   county_cases1 = county_cases;
-                   update_map(id);
-                } else {
-                   county_cases1 = county_death_cases;
-                   update_map(id);
-                }
+                county_new_cases2 = null;
+                county_death_cases2 = null;
+                update_map(id);
              }
            }
          };
-         console.log('read_cases1');
          xhttp.open("GET", "/COVID-19/data/case_" + day_slide[day] + ".txt", true);
          xhttp.send();
       }
@@ -182,23 +169,13 @@ H2 {
          xhttp.onreadystatechange = function() {
            if (this.readyState == 4 && this.status == 200) {
              var obj = JSON.parse(this.responseText);
-             var fips_cases = obj.fips_cases
-             var fips_death = obj.fips_death
-             var county_cases = obj.county_cases
-             var county_death_cases = obj.county_death_cases
-             var case_sel = document.getElementById("case_sel").value
-             fips_cases2 = fips_cases;
-             fips_death2 = fips_death;
-             if (case_sel == 2) {
-                county_cases2 = county_cases;
-                update_map(id);
-             } else {
-                county_cases2 = county_death_cases;
-                update_map(id);
-             }
+             fips_cases2 = obj.fips_cases
+             fips_death2 = obj.fips_death
+             county_new_cases2 = obj.county_cases
+             county_death_cases2 = obj.county_death_cases
+             update_map(id);
            }
          };
-         console.log('read_cases1');
          xhttp.open("GET", "/COVID-19/data/case_" + day_slide[day-num_day_inc] + ".txt", true);
          xhttp.send();
       }
@@ -206,6 +183,7 @@ H2 {
         var slider = document.getElementById("myRange");
         var day = parseInt(slider.value);
         var num_day_inc = document.getElementById("num_day_inc").value
+        var case_sel = document.getElementById("case_sel").value
 
         var D=document.getElementById(id)
 	S=eval(D.nodeName)(D,id) //sends OBJECT to function OBJECT, EMBED to EMBED etc.
@@ -213,13 +191,23 @@ H2 {
 
         var state = document.getElementById("choose-state").value
         // Create items array
-        var top_county = Object.keys(county_cases1[state]).map(function(key) {
-           if (county_cases2 != null) {
-              return [key, county_cases1[state][key]-county_cases2[state][key]];
-           } else {
-              return [key, county_cases1[state][key]];
-           }
-        });
+        if (case_sel == 2) {
+           var top_county = Object.keys(county_new_cases1[state]).map(function(key) {
+              if (county_new_cases2 != null) {
+                 return [key, county_new_cases1[state][key]-county_new_cases2[state][key]];
+              } else {
+                 return [key, county_new_cases1[state][key]];
+              }
+           });
+        } else {
+           var top_county = Object.keys(county_death_cases1[state]).map(function(key) {
+              if (county_death_cases2 != null) {
+                 return [key, county_death_cases1[state][key]-county_death_cases2[state][key]];
+              } else {
+                 return [key, county_death_cases1[state][key]];
+              }
+           });
+        }
 
         resize_map(S, region_box[state]);
 
@@ -236,10 +224,18 @@ H2 {
            var k = top_county[i][0];
            document.getElementById("top_name["+i.toString()+"]").innerHTML  = k
            var delta = 0;
-           if (county_cases2 != null) {
-              delta = county_cases1[state][k] - county_cases2[state][k];
+           if (case_sel == 2) {
+              if (county_new_cases2 != null) {
+                 delta = county_new_cases1[state][k] - county_new_cases2[state][k];
+              } else {
+                 delta = county_new_cases1[state][k]
+              }
            } else {
-              delta = county_cases1[state][k]
+              if (county_death_cases2 != null) {
+                 delta = county_death_cases1[state][k] - county_death_cases2[state][k];
+              } else {
+                 delta = county_death_cases1[state][k]
+              }
            }
            document.getElementById("top_value["+i.toString()+"]").innerHTML = delta
            if (i > last_found) {  // async
