@@ -140,10 +140,20 @@ H2 {
              var fips_cases = obj.fips_cases
              var fips_death = obj.fips_death
              var county_cases = obj.county_cases
+             var county_death_cases = obj.county_death_cases
+             var case_sel = document.getElementById("case_sel").value
              if (day >= num_day_inc) {
-                read_cases2(id, day, num_day_inc, county_cases, fips_cases, fips_death);
+                if (case_sel == 2) {
+                   read_cases2(id, day, num_day_inc, county_cases, fips_cases, fips_death);
+                } else {
+                   read_cases2(id, day, num_day_inc, county_death_cases, fips_cases, fips_death);
+                }
              } else {
-                update_map(id, day, num_day_inc, county_cases, null, fips_cases, fips_death);
+                if (case_sel == 2) {
+                   update_map(id, day, num_day_inc, county_cases, null, fips_cases, fips_death);
+                } else {
+                   update_map(id, day, num_day_inc, county_death_cases, null, fips_cases, fips_death);
+                }
              }
            }
          };
@@ -158,7 +168,13 @@ H2 {
              var fips_cases = obj.fips_cases
              var fips_death = obj.fips_death
              var county_cases = obj.county_cases
-             update_map(id, day, num_day_inc, county_cases1, county_cases, fips_cases1, fips_death1, fips_cases, fips_death);
+             var county_death_cases = obj.county_death_cases
+             var case_sel = document.getElementById("case_sel").value
+             if (case_sel == 2) {
+                update_map(id, day, num_day_inc, county_cases1, county_cases, fips_cases1, fips_death1, fips_cases, fips_death);
+             } else {
+                update_map(id, day, num_day_inc, county_cases1, county_death_cases, fips_cases1, fips_death1, fips_cases, fips_death);
+             }
            }
          };
          xhttp.open("GET", "/COVID-19/data/case_" + day_slide[day-num_day_inc] + ".txt", true);
