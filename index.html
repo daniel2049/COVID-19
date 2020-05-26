@@ -263,11 +263,6 @@ H2 {
  <text x="150" y="10" font-family="sans-serif" font-size="10px" fill="black">10001+</text>
  <rect x="150" y="12" width="50" height="3" style="fill:hsl(0, 100%, 22%)"></rect>
 </svg>
-<div id="d01">
-    <output class="lblFloat"></output>
-    <input type="range" id="myRange" min="0" max="100" oninput="read_cases1('svg-object')" />
-    <label>Time Lapse:</label>
-</div>
 
 <div>
 <select id="case_sel" oninput=update_map('svg-object')>
@@ -325,6 +320,11 @@ H2 {
 </table>
 </div>
 
+<div id="d01">
+    <output class="lblFloat"></output>
+    <input type="range" id="myRange" min="0" max="100" oninput="read_cases1('svg-object')" />
+    <label>Time Lapse:</label>
+</div>
 <script>
 var slider = document.getElementById("myRange");
 slider.max = (num_case-1).toString();
